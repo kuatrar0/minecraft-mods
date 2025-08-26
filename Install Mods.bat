@@ -1,7 +1,7 @@
 @echo off
-title Minecraft Mods Auto-Installer
+title Minecraft Mods Auto-Installer (Simple)
 echo ========================================
-echo Minecraft Mods Auto-Installer
+echo Minecraft Mods Auto-Installer (Simple)
 echo ========================================
 echo.
 echo This will install Forge 47.4.0 and copy all mods to your Minecraft.

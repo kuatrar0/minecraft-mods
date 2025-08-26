@@ -1,4 +1,4 @@
-# Minecraft Mods Auto-Installer Script
+# Minecraft Mods Auto-Installer Script (Simple Version)
 # This script downloads Forge 47.4.0 for Minecraft 1.20.1 and installs all mods
 
 Write-Host "=== Minecraft Mods Auto-Installer ===" -ForegroundColor Green
@@ -33,9 +33,9 @@ $forgeInstaller = Join-Path $tempDir "forge-1.20.1-47.4.0-installer.jar"
 try {
     Write-Host "Downloading from: $forgeUrl" -ForegroundColor Gray
     Invoke-WebRequest -Uri $forgeUrl -OutFile $forgeInstaller -UseBasicParsing
-    Write-Host "✓ Forge installer downloaded successfully!" -ForegroundColor Green
+    Write-Host "[OK] Forge installer downloaded successfully!" -ForegroundColor Green
 } catch {
-    Write-Host "✗ Failed to download Forge installer: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "[ERROR] Failed to download Forge installer: $($_.Exception.Message)" -ForegroundColor Red
     Write-Host "Please check your internet connection and try again." -ForegroundColor Yellow
     exit 1
 }
@@ -44,12 +44,12 @@ try {
 Write-Host "`nStep 2: Checking Java installation..." -ForegroundColor Cyan
 $javaPath = Get-Command java -ErrorAction SilentlyContinue
 if (-not $javaPath) {
-    Write-Host "✗ Java is not installed or not in PATH!" -ForegroundColor Red
+    Write-Host "[ERROR] Java is not installed or not in PATH!" -ForegroundColor Red
     Write-Host "Please install Java 17 or later from: https://adoptium.net/" -ForegroundColor Yellow
     Write-Host "After installing Java, run this script again." -ForegroundColor Yellow
     exit 1
 } else {
-    Write-Host "✓ Java found: $($javaPath.Source)" -ForegroundColor Green
+    Write-Host "[OK] Java found: $($javaPath.Source)" -ForegroundColor Green
 }
 
 # Step 3: Run Forge Installer
@@ -62,9 +62,9 @@ Write-Host ""
 
 try {
     Start-Process -FilePath "java" -ArgumentList "-jar", $forgeInstaller -Wait
-    Write-Host "✓ Forge installation completed!" -ForegroundColor Green
+    Write-Host "[OK] Forge installation completed!" -ForegroundColor Green
 } catch {
-    Write-Host "✗ Failed to run Forge installer: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "[ERROR] Failed to run Forge installer: $($_.Exception.Message)" -ForegroundColor Red
     exit 1
 }
 
@@ -72,22 +72,22 @@ try {
 Write-Host "`nStep 4: Setting up mods directory..." -ForegroundColor Cyan
 if (-not (Test-Path $modsDir)) {
     New-Item -ItemType Directory -Path $modsDir -Force | Out-Null
-    Write-Host "✓ Created mods directory: $modsDir" -ForegroundColor Green
+    Write-Host "[OK] Created mods directory: $modsDir" -ForegroundColor Green
 } else {
-    Write-Host "✓ Mods directory already exists: $modsDir" -ForegroundColor Green
+    Write-Host "[OK] Mods directory already exists: $modsDir" -ForegroundColor Green
 }
 
 # Step 5: Copy mods
 Write-Host "`nStep 5: Copying mods..." -ForegroundColor Cyan
 if (-not (Test-Path $modsSourceDir)) {
-    Write-Host "✗ Mods source directory not found: $modsSourceDir" -ForegroundColor Red
+    Write-Host "[ERROR] Mods source directory not found: $modsSourceDir" -ForegroundColor Red
     Write-Host "Please make sure this script is in the same directory as the 'mods' folder." -ForegroundColor Yellow
     exit 1
 }
 
 $modFiles = Get-ChildItem -Path $modsSourceDir -Filter "*.jar" -ErrorAction SilentlyContinue
 if ($modFiles.Count -eq 0) {
-    Write-Host "✗ No .jar mod files found in: $modsSourceDir" -ForegroundColor Red
+    Write-Host "[ERROR] No .jar mod files found in: $modsSourceDir" -ForegroundColor Red
     exit 1
 }
 
@@ -96,20 +96,20 @@ foreach ($modFile in $modFiles) {
     $destinationPath = Join-Path $modsDir $modFile.Name
     try {
         Copy-Item -Path $modFile.FullName -Destination $destinationPath -Force
-        Write-Host "✓ Copied: $($modFile.Name)" -ForegroundColor Green
+        Write-Host "[OK] Copied: $($modFile.Name)" -ForegroundColor Green
         $copiedCount++
     } catch {
-        Write-Host "✗ Failed to copy $($modFile.Name): $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "[ERROR] Failed to copy $($modFile.Name): $($_.Exception.Message)" -ForegroundColor Red
     }
 }
 
-Write-Host "`n✓ Successfully copied $copiedCount mods to: $modsDir" -ForegroundColor Green
+Write-Host "`n[OK] Successfully copied $copiedCount mods to: $modsDir" -ForegroundColor Green
 
 # Step 6: Cleanup
 Write-Host "`nStep 6: Cleaning up temporary files..." -ForegroundColor Cyan
 try {
     Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
-    Write-Host "✓ Cleanup completed!" -ForegroundColor Green
+    Write-Host "[OK] Cleanup completed!" -ForegroundColor Green
 } catch {
     Write-Host "Warning: Could not clean up temporary files: $($_.Exception.Message)" -ForegroundColor Yellow
 }
